@@ -275,7 +275,12 @@
       forceResize = false
     }
     if(typeof wrap === 'undefined' || wrap === null){
-      wrap = [this.ctx.canvas.width-pos[0],this.ctx.canvas.height-pos[1],0];
+      // canvas size fix
+      if (forceResize) { 
+        wrap = this.getCanvasSizeFromText(text, size, pos);
+      } else {
+        wrap = [this.ctx.canvas.width-pos[0],this.ctx.canvas.height-pos[1],0];
+      }
     }
 
     var wrapped2DArray;
@@ -308,5 +313,16 @@
     }
 
     return missing;
+  },
+
+  // calculates image size from rows and columns of text, returns initial wrap array 
+  getCanvasSizeFromText : function(text, size, pos) {
+    var lines = text.split(/\r|\r\n|\n/);
+    var linesCount = lines.length;
+    var longestLine = 0;
+    for (var i = 0; i < linesCount; i++) {
+      if (lines[i].length > longestLine) longestLine = lines[i].length;
+     }
+    return [(longestLine * size * 16) + pos[0], (linesCount * size * 16 ) + pos[1], 0];
   }
 };
